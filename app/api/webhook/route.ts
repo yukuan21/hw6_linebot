@@ -49,9 +49,9 @@ export async function POST(req: NextRequest) {
     // 解析事件
     const events: WebhookEvent[] = JSON.parse(body).events;
 
-    // 先快速返回 200 回應給 Line，避免超時
-    // 然後在背景處理事件
-    Promise.all(
+    // 處理所有事件（等待處理完成後再返回，確保在 Vercel 中正確執行）
+    // 注意：Line webhook 有 30 秒超時限制，需要確保處理能在時間內完成
+    await Promise.all(
       events.map(async (event: WebhookEvent) => {
         const userId = event.source.userId || 'unknown';
 
@@ -258,15 +258,9 @@ export async function POST(req: NextRequest) {
           }
         }
       })
-    ).catch((error) => {
-      // 背景處理錯誤，不影響 HTTP 回應
-      // 過濾掉 ECONNRESET 錯誤，因為這是正常的連接中斷
-      if (error?.code !== 'ECONNRESET' && error?.message !== 'aborted') {
-        console.error('背景處理事件時發生錯誤:', error);
-      }
-    });
+    );
 
-    // 立即返回 200 回應，不等待事件處理完成
+    // 所有事件處理完成後返回成功回應
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Webhook 錯誤:', error);
