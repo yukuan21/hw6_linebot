@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lineClient, validateLineConfig } from '@/lib/line-config';
+import type { RichMenu } from '@line/bot-sdk';
 
 // 驗證配置
 validateLineConfig();
 
 // Rich Menu 配置
-const richMenuConfig = {
+const richMenuConfig: RichMenu = {
   size: {
     width: 2500,
     height: 843,
@@ -22,7 +23,7 @@ const richMenuConfig = {
         height: 843,
       },
       action: {
-        type: 'postback',
+        type: 'postback' as const,
         label: '熱門景點',
         data: 'popular_destinations',
         displayText: '查看熱門景點',
@@ -36,7 +37,7 @@ const richMenuConfig = {
         height: 843,
       },
       action: {
-        type: 'postback',
+        type: 'postback' as const,
         label: '旅遊規劃',
         data: 'travel_planning',
         displayText: '開始規劃旅遊',
@@ -50,7 +51,7 @@ const richMenuConfig = {
         height: 843,
       },
       action: {
-        type: 'postback',
+        type: 'postback' as const,
         label: '美食推薦',
         data: 'food_recommendation',
         displayText: '尋找美食',
@@ -94,10 +95,15 @@ export async function POST(req: NextRequest) {
  */
 export async function GET() {
   try {
-    const richMenus = await lineClient.getRichMenuList();
+    const richMenusResponse = await lineClient.getRichMenuList();
+    // getRichMenuList 返回的是一個物件，包含 richmenus 陣列
+    const richMenus = Array.isArray(richMenusResponse) 
+      ? richMenusResponse 
+      : (richMenusResponse as any).richmenus || richMenusResponse;
+    
     return NextResponse.json({
       success: true,
-      richMenus: richMenus.richmenus,
+      richMenus: richMenus,
     });
   } catch (error: any) {
     console.error('取得 Rich Menu 列表時發生錯誤:', error);
@@ -116,10 +122,14 @@ export async function GET() {
  */
 export async function DELETE() {
   try {
-    const richMenus = await lineClient.getRichMenuList();
+    const richMenusResponse = await lineClient.getRichMenuList();
+    // getRichMenuList 返回的是一個物件，包含 richmenus 陣列
+    const richMenus = Array.isArray(richMenusResponse) 
+      ? richMenusResponse 
+      : (richMenusResponse as any).richmenus || richMenusResponse;
     
     // 刪除所有 Rich Menu
-    for (const richMenu of richMenus.richmenus) {
+    for (const richMenu of richMenus) {
       try {
         await lineClient.deleteRichMenu(richMenu.richMenuId);
         console.log(`✅ 已刪除 Rich Menu: ${richMenu.richMenuId}`);
