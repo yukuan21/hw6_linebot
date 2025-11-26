@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { WebhookEvent, MessageEvent, TextMessage, PostbackEvent } from '@line/bot-sdk';
-import { lineClient, verifyLineSignature, validateLineConfig } from '@/lib/line-config';
+import { getLineClient, verifyLineSignature, validateLineConfig } from '@/lib/line-config';
 import { generateResponse } from '@/lib/openai-service';
 import { connectDB } from '@/lib/mongodb';
 import { getOrCreateConversation, updateConversationMode } from '@/lib/db-service';
@@ -16,6 +16,7 @@ import { ConversationMode } from '@/lib/models/Conversation';
 export async function POST(req: NextRequest) {
   // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
   validateLineConfig();
+  const lineClient = getLineClient();
   try {
     // 確保資料庫連接已建立（在處理訊息之前）
     try {

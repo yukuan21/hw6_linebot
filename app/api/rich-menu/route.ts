@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { lineClient, validateLineConfig } from '@/lib/line-config';
+import { getLineClient, validateLineConfig } from '@/lib/line-config';
 import type { RichMenu } from '@line/bot-sdk';
 
 // Rich Menu 配置
@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
   try {
     // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
     validateLineConfig();
+    const lineClient = getLineClient();
     
     // 建立 Rich Menu
     const richMenuId = await lineClient.createRichMenu(richMenuConfig);
@@ -97,6 +98,7 @@ export async function GET() {
   try {
     // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
     validateLineConfig();
+    const lineClient = getLineClient();
     
     const richMenusResponse = await lineClient.getRichMenuList();
     // getRichMenuList 返回的是一個物件，包含 richmenus 陣列
@@ -127,6 +129,7 @@ export async function DELETE() {
   try {
     // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
     validateLineConfig();
+    const lineClient = getLineClient();
     
     const richMenusResponse = await lineClient.getRichMenuList();
     // getRichMenuList 返回的是一個物件，包含 richmenus 陣列
