@@ -6,6 +6,9 @@ import {
   getConversationMessageCount,
 } from '@/lib/db-service';
 
+// 強制此路由為動態路由，因為使用了 searchParams
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/messages
  * 取得訊息列表（依 conversationId）

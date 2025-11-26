@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { getAllConversations, searchMessages } from '@/lib/db-service';
 
+// 強制此路由為動態路由，因為使用了 searchParams
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/conversations
  * 取得對話列表（支援篩選和分頁）
