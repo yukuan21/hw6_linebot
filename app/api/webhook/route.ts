@@ -284,3 +284,8 @@ export async function GET() {
     timestamp: new Date().toISOString(),
   });
 }
+
+// HEAD 請求處理（Line 驗證 webhook 時使用）
+export async function HEAD() {
+  return new NextResponse(null, { status: 200 });
+}
