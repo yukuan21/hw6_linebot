@@ -96,12 +96,12 @@ export async function generateResponse(
       messages.splice(1, messages.length - MAX_CONVERSATION_MESSAGES - 1);
     }
 
-    // 呼叫 OpenAI API
+    // 呼叫 OpenAI API（優化：減少 max_tokens 以加快回應速度）
     const completion = await openaiClient.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: messages,
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 300, // 減少 token 數量以加快回應
     });
 
     // 取得 AI 回應
@@ -378,7 +378,7 @@ export async function generateTravelPlanningResponse(
       model: 'gpt-3.5-turbo',
       messages: messages,
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 300, // 減少 token 數量以加快回應
     });
 
     const aiResponse =
@@ -438,7 +438,7 @@ export async function generateFoodRecommendationResponse(
       model: 'gpt-3.5-turbo',
       messages: messages,
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 300, // 減少 token 數量以加快回應
     });
 
     const aiResponse =

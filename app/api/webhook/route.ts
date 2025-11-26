@@ -17,19 +17,26 @@ export async function POST(req: NextRequest) {
   // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
   validateLineConfig();
   const lineClient = getLineClient();
+  
+  // 取得請求內容（先取得，避免在資料庫連接時浪費時間）
+  const body = await req.text();
+  const signature = req.headers.get('x-line-signature');
+  
   try {
     // 確保資料庫連接已建立（在處理訊息之前）
+    // 使用 Promise.race 設定超時，避免等待太久
     try {
-      await connectDB();
+      await Promise.race([
+        connectDB(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('資料庫連接超時')), 5000)
+        )
+      ]);
     } catch (dbError) {
-      console.error('資料庫連接失敗:', dbError);
+      console.error('資料庫連接失敗或超時:', dbError);
       // 如果資料庫連接失敗，仍然繼續處理（降級處理）
       // 但會在後續的 generateResponse 中再次嘗試連接
     }
-
-    // 取得請求內容
-    const body = await req.text();
-    const signature = req.headers.get('x-line-signature');
 
     if (!signature) {
       return NextResponse.json(
