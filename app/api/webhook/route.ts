@@ -12,11 +12,10 @@ import {
 } from '@/lib/bot-features';
 import { ConversationMode } from '@/lib/models/Conversation';
 
-// 驗證配置
-validateLineConfig();
-
 // 處理 Line webhook 的 POST 請求
 export async function POST(req: NextRequest) {
+  // 驗證配置（在實際執行時才驗證，避免建置時錯誤）
+  validateLineConfig();
   try {
     // 確保資料庫連接已建立（在處理訊息之前）
     try {
