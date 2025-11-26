@@ -10,6 +10,8 @@ export interface IMessage extends Document {
   role: MessageRole;
   content: string;
   timestamp: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Message Schema
